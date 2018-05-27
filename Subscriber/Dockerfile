@@ -4,8 +4,8 @@ WORKDIR /usr/src/app
 
 RUN pip install pyzmq
 
-COPY ../ZMQHelper.py ./
-COPY SubscribeData.py ./
+COPY ./ZMQHelper.py ./
+COPY /Subscriber/SubscribeData.py ./
 
 CMD ['python', './SubscribeData.py']
 
