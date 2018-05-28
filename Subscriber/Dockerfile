@@ -2,7 +2,7 @@ FROM python:3
 
 WORKDIR /usr/src/app
 
-RUN pip install --default-timeout=100 pyzmq
+RUN pip3 install --default-timeout=1000 pyzmq
 
 COPY ./ZMQHelper.py ./
 COPY ./Subscriber/SubscribeData.py ./
