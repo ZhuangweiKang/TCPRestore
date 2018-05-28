@@ -15,7 +15,7 @@ def pullImage(client, repository):
     client.images.pull(repository)
 
 def runContainer(client, image, name):
-    return client.containers.run(image=image, name=name, detach=True)
+    return client.containers.run(image=image, name=name, detach=True, ports={'3000/tcp':3000})
 
 def getContainer(client, name):
     return client.containers.get(name)
