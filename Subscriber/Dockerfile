@@ -14,8 +14,10 @@ RUN pip install --upgrade virtualenv
 RUN pip install pyzmq
 RUN apt-get install -y nano git
 
+WORKDIR /home
+
 COPY ./ZMQHelper.py ./
 COPY ./Subscriber/SubscribeData.py ./
 
-CMD ['python', './SubscribeData.py']
+CMD ["python", "./SubscribeData.py"]
 
