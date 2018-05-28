@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# install docker sdk
+pip install docker
+
 # check if docker exists
 docker_check=$(which docker)
 

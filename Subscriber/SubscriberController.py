@@ -11,7 +11,7 @@ import Controller as controller
 def main(choice):
     subscriber_image_tag = 'subscriber:latest'
     subscriber_container_name = 'Subscriber'
-    subscriber_image_path = './Subscriber/'
+    subscriber_image_path = './'
 
     def testPub():
         print('--------------------------------------')
