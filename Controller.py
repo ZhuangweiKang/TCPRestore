@@ -11,17 +11,24 @@ def executor(imagePath, imageTag, containerName, doDump=False):
     # create docker client
     client = dHelper.setClient()
 
+    print('Checking if container exists...')
+
     # check container if exists
     if dHelper.checkContainer(client, containerName) is True:
         container = dHelper.getContainer(client, containerName)
         dHelper.deleteContainer(container)
+        print('Old container exists, deleting old container...')
 
     # check if image exists
     if dHelper.checkImage(client, imageTag) is False:
         dHelper.buildImage(client, imagePath, imageTag)
 
-    # Run a subscriber container
+    print('Image doesn\'t exist, building image...')
+
+    # Run a container
     container = dHelper.runContainer(client, imageTag, containerName)
+
+    print('Creat and run a container...')
 
     if doDump:
         print('\n-------------------\nWaiting 30 seconds...')
