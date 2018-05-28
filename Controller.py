@@ -22,7 +22,7 @@ def executor(imagePath, imageTag, containerName, doDump=False):
 
     # check if image exists
     if dHelper.checkImage(client, imageTag) is False:
-        dHelper.buildImage(client, imagePath, imageTag)
+        dHelper.pullImage(client, imagePath)
 
     print('Image doesn\'t exist, building image...')
 

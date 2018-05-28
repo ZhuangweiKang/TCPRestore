@@ -11,6 +11,9 @@ def setClient():
 def buildImage(client, path, tag):
     return client.images.build(path=path, tag=tag)
 
+def pullImage(client, repository):
+    client.images.pull(repository)
+
 def runContainer(client, image, name):
     return client.containers.run(image=image, name=name, STDIN=True, tty=True, detach=True)
 
