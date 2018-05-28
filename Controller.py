@@ -2,6 +2,7 @@
 # encoding: utf-8
 # Author: Zhuangwei Kang
 
+import os
 import time
 import random
 import DockerHelper as dHelper
@@ -18,6 +19,8 @@ def executor(imagePath, imageTag, containerName, doDump=False):
         container = dHelper.getContainer(client, containerName)
         dHelper.deleteContainer(container)
         print('Old container exists, deleting old container...')
+
+    os.system('cd ../')
 
     # check if image exists
     if dHelper.checkImage(client, imageTag) is False:

@@ -4,8 +4,8 @@ WORKDIR /usr/src/app
 
 RUN pip install --default-timeout=100 pyzmq
 
-COPY ../ZMQHelper.py ./
-COPY ./PublishData.py ./
+COPY ./ZMQHelper.py ./
+COPY ./Publisher/PublishData.py ./
 
 CMD ["python", "./PublishData.py"]
 
