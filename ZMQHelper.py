@@ -15,7 +15,8 @@ def connect(address, port):
 
 
 def subscribeTopic(socket, topic):
-    socket.subscribe(topic)
+    topicfilter = topic
+    socket.setsockopt(zmq.SUBSCRIBE, topicfilter)
 
 
 def unsubscribeTopic(socket, topic):
