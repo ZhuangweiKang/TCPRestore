@@ -32,7 +32,7 @@ def executor(imagePath, imageTag, containerName, doDump=False):
         checkpoint_name = 'checkpoint_' + str(random.randint(1, 100))
         dHelper.checkpoint(checkpoint_name, dHelper.getContainerID(container))
 
-        print('\n-------------------\nWaiting for 30 seconds...')
+        print('\n-------------------\nWaiting for 20 seconds...')
         time.sleep(20)
 
         # restore the container
