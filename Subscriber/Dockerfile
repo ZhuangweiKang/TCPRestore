@@ -12,7 +12,6 @@ RUN pip install --upgrade virtualenv
 
 # Install app dependencies
 RUN pip install pyzmq
-RUN apt-get install -y nano git
 
 WORKDIR /home
 
