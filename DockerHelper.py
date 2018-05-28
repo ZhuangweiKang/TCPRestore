@@ -45,6 +45,6 @@ def checkpoint(checkpoint_name, containerID):
     print(os.popen(checkpoint_cmd, 'r').read())
 
 def restore(containerID, checkpoint_name):
-    checkpoint_dir = '/var/lib/docker/containers/%s/checkpoints/'
+    checkpoint_dir = '/var/lib/docker/containers/%s/checkpoints/' % containerID
     restore_cmd = 'docker start --checkpoint-dir=%s --checkpoint=%s %s' % (checkpoint_dir, checkpoint_name, containerID)
     print(os.popen(restore_cmd, 'r').read())
