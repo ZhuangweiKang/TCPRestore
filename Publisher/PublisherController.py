@@ -8,7 +8,7 @@ import Controller as controller
 def main(choice):
     publisher_image_tag = 'publisher:latest'
     publisher_container_name = 'Publisher'
-    publisher_image_path = './'
+    publisher_image_path = 'zhuangweikang/publisher'
 
     def testPub():
         print('--------------------------------------')
