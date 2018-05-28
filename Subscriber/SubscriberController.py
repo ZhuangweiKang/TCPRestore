@@ -27,9 +27,6 @@ def main(choice):
     else:
         testSub()
 
-    while True:
-        pass
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--choice', type=int, default=1, help='1. Test Publisher, 2. Test Subscriber')
