@@ -9,19 +9,18 @@ import argparse
 import Controller as controller
 
 def main(choice):
-    publisher_image_tag = 'publisher:latest'
     publisher_container_name = 'Publisher'
-    publisher_image_path = 'zhuangweikang/publisher'
+    publisher_image = 'zhuangweikang/publisher'
 
     def testPub():
         print('--------------------------------------')
         print('Test case 1: Dump and restore Publisher container')
-        controller.executor(publisher_image_path, publisher_image_tag, publisher_container_name, True)
+        controller.executor(publisher_image, publisher_container_name, True)
 
     def testSub():
         print('--------------------------------------')
         print('Test case 2: Dump and restore Subscriber container')
-        controller.executor(publisher_image_path, publisher_image_tag, publisher_container_name, False)
+        controller.executor(publisher_image, publisher_container_name, False)
 
     if choice == 1:
         testPub()

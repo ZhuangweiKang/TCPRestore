@@ -7,7 +7,7 @@ import time
 import random
 import DockerHelper as dHelper
 
-def executor(imagePath, imageTag, containerName, doDump=False):
+def executor(image, containerName, doDump=False):
 
     # create docker client
     client = dHelper.setClient()
@@ -21,13 +21,13 @@ def executor(imagePath, imageTag, containerName, doDump=False):
         print('Old container exists, deleting old container...')
 
     # check if image exists
-    if dHelper.checkImage(client, imageTag) is False:
-        dHelper.pullImage(client, imagePath)
+    if dHelper.checkImage(client, image) is False:
+        dHelper.pullImage(client, image)
 
     print('Image doesn\'t exist, building image...')
 
     # Run a container
-    container = dHelper.runContainer(client, imageTag, containerName)
+    container = dHelper.runContainer(client, image, containerName)
 
     print('Creat and run a container...')
 
