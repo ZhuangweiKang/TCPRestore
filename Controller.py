@@ -20,8 +20,6 @@ def executor(imagePath, imageTag, containerName, doDump=False):
         dHelper.deleteContainer(container)
         print('Old container exists, deleting old container...')
 
-    os.system('cd ../')
-
     # check if image exists
     if dHelper.checkImage(client, imageTag) is False:
         dHelper.buildImage(client, imagePath, imageTag)
