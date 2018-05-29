@@ -128,7 +128,7 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
             sys.exit(1)
     else:
         # TODO: listen message from source host to pull image
-        iSocket = zmq.bind('3200')
+        iSocket = zmq.csBind('3200')
         msg = iSocket.recv_string()
         msg = msg.split(':')
         if msg[0] == 'image':
