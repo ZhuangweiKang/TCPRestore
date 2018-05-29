@@ -185,7 +185,7 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
             logger.error(ex)
 
 def getWorkDir():
-    return 'var/lib/docker/tmp'
+    return '/var/lib/docker/tmp'
 
 def goToWorkDir():
     workDir = '/var/lib/docker/tmp'
