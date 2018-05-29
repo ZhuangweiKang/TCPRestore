@@ -195,7 +195,8 @@ def tarFiles(checkpointTar, containerID, checkpointName):
     checkpointDir = '/var/lib/docker/containers/%s/checkpoints' % containerID
     os.chdir(checkpointDir)
     tar_file = tarfile.TarFile.open(name=checkpointTar, mode='w')
-    tar_file.add('./%s' % checkpointName)
+    checkpointTarFile = checkpointDir + '/' + checkpointName
+    tar_file.add(checkpointTarFile, arcname=os.path.basename(checkpointTarFile))
     tar_file.close()
     shutil.move(checkpointTar, getWorkDir())
     goToWorkDir()
