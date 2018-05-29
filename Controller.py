@@ -91,7 +91,7 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
 
         dHelper.checkpoint(checkpoint_name, dHelper.getContainerID(container))
 
-        logger.info('\nContainer has been dumped.')
+        logger.info('Container has been dumped.')
 
         # TODO: tar dumped image files
         tarFiles(checkpoint_name, dHelper.getContainerID(container), checkpoint_name)
@@ -192,10 +192,10 @@ def goToWorkDir():
     os.chdir(workDir)
 
 def tarFiles(checkpointTar, containerID, checkpointName):
-    checkpointDir = '/var/lib/docker/containers/%s/checkpoints/%s' % (containerID, checkpointName)
+    checkpointDir = '/var/lib/docker/containers/%s/checkpoints' % containerID
     os.chdir(checkpointDir)
     tar_file = tarfile.TarFile.open(name=checkpointTar, mode='w')
-    tar_file.add('./')
+    tar_file.add('./%s' % checkpointName)
     tar_file.close()
     shutil.move(checkpointTar, getWorkDir())
     goToWorkDir()
