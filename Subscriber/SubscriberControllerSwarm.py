@@ -37,10 +37,10 @@ def main(worker_address, choice):
 
     if choice == 1:
         # build subscriber container
-        controller.executorSwarm(logger, subscriber_image, subscriber_container_name, network, True, worker_address)
+        controller.executorSwarm(logger, subscriber_image, subscriber_container_name, network, False, worker_address)
     else:
         # build subscriber container
-        controller.executorSwarm(logger, subscriber_image, subscriber_container_name, network, False, worker_address)
+        controller.executorSwarm(logger, subscriber_image, subscriber_container_name, network, True, worker_address)
 
 
 if __name__ == '__main__':
