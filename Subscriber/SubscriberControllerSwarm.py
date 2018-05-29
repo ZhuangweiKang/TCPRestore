@@ -22,8 +22,8 @@ def main(worker_address, choice):
     # join the swarm environment
     socket = zmq.csBind('3100')
     msg = socket.recv_string()
-    advertise_addr = msg.split()[0]
-    join_token = msg.split()[1]
+    advertise_addr = str(msg.split()[0])
+    join_token = str(msg.split()[1])
     socket.send_string('Ack')
 
     client = dHelper.setClient()
