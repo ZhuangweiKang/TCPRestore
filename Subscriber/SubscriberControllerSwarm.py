@@ -20,7 +20,7 @@ def main(worker_address, choice):
     network = 'kangNetwork'
 
     # join the swarm environment
-    socket = zmq.bind('3100')
+    socket = zmq.csBind('3100')
     msg = socket.recv_string()
     advertise_addr = msg.split()[0]
     join_token = msg.split()[1]

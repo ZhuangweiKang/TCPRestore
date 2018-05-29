@@ -69,8 +69,8 @@ def deleteNode(node_name):
     cmd = 'docker node rm %s' % node_name
     os.system(cmd)
 
-def createNetwork(client, name, driver='overlay', attachable=True, subset=None):
-    ipam_pool = docker.types.IPAMPool(subset=subset)
+def createNetwork(client, name, driver='overlay', attachable=True, subnet=None):
+    ipam_pool = docker.types.IPAMPool(subnet=subnet)
     ipam_config = docker.types.IPAMConfig(driver=driver, pool_configs=[ipam_pool])
     client.networks.create(name=name, ipam=ipam_config, attachable=attachable)
 
