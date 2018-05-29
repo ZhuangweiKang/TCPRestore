@@ -71,8 +71,8 @@ def deleteNode(node_name):
 
 def createNetwork(client, name, driver='overlay', attachable=True, subnet=None):
     ipam_pool = docker.types.IPAMPool(subnet=subnet)
-    ipam_config = docker.types.IPAMConfig(driver=driver, pool_configs=[ipam_pool])
-    client.networks.create(name=name, ipam=ipam_config, attachable=attachable)
+    ipam_config = docker.types.IPAMConfig(pool_configs=[ipam_pool])
+    client.networks.create(name=name, driver=driver, ipam=ipam_config, attachable=attachable)
 
 def getContainerIP(container_name):
     cmd = 'docker inspect -f \'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}\' %s' % container_name
