@@ -48,3 +48,32 @@ def restore(containerID, checkpoint_name):
     checkpoint_dir = '/var/lib/docker/containers/%s/checkpoints/' % containerID
     restore_cmd = 'docker start --checkpoint-dir=%s --checkpoint=%s %s' % (checkpoint_dir, checkpoint_name, containerID)
     print(os.popen(restore_cmd, 'r').read())
+
+def initSwarm(client, advertise_addr):
+    client.swarm.init(advertise_addr=advertise_addr)
+
+def joinSwarm(client, token, address):
+    client.swarm.join(remote_addrs={address}, join_token=token)
+
+def leaveSwarm(client):
+    client.swarm.leave()
+
+def getNodeList(client):
+    return client.nodes.list(filter={'role': 'worker'})
+
+def getJoinToken():
+    cmd = 'docker swarm join-token worker -q'
+    return os.popen(cmd, 'r').read()
+
+def deleteNode(node_name):
+    cmd = 'docker node rm %s' % node_name
+    os.system(cmd)
+
+def createNetwork(client, name, driver='overlay', attachable=True, subset=None):
+    ipam_pool = docker.types.IPAMPool(subset=subset)
+    ipam_config = docker.types.IPAMConfig(driver=driver, pool_configs=[ipam_pool])
+    client.networks.create(name=name, ipam=ipam_config, attachable=attachable)
+
+def getContainerIP(container_name):
+    cmd = 'docker inspect -f \'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}\' %s' % container_name
+    return os.popen(cmd, 'r').read()

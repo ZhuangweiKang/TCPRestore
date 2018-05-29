@@ -13,6 +13,12 @@ def connect(address, port):
     socket.connect(connect_str)
     return socket
 
+def csConnect(address, port):
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    connect_str = 'tcp://%s:%s' % (address, port)
+    socket.connect(connect_str)
+    return socket
 
 def subscribeTopic(socket, topic):
     topicfilter = topic
@@ -22,6 +28,11 @@ def subscribeTopic(socket, topic):
 def unsubscribeTopic(socket, topic):
     socket.unsubscribe(topic)
 
+def csBind(port):
+    context = zmq.Context()
+    socket = context.socket(zmq.REP)
+    socket.bind('tcp://*:%s' % port)
+    return socket
 
 def bind(port):
     context = zmq.Context()
