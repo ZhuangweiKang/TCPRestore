@@ -53,7 +53,7 @@ def initSwarm(client, advertise_addr):
     client.swarm.init(advertise_addr=advertise_addr)
 
 def joinSwarm(client, token, address):
-    client.swarm.join(remote_addrs={address}, join_token=token)
+    client.swarm.join(remote_addrs=[address], join_token=token)
 
 def leaveSwarm(client):
     client.swarm.leave()
