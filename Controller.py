@@ -88,13 +88,13 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
 
         # checkpoint the container
         checkpoint_name = 'checkpoint_' + str(random.randint(1, 100))
-
+        tarName = checkpoint_name + '.tar'
         dHelper.checkpoint(checkpoint_name, dHelper.getContainerID(container))
 
         logger.info('Container has been dumped.')
 
         # TODO: tar dumped image files
-        tarFiles(checkpoint_name, dHelper.getContainerID(container), checkpoint_name)
+        tarFiles(tarName, dHelper.getContainerID(container), checkpoint_name)
         logger.info('Tar dumped image files.')
 
         # TODO: send tar file to new host
@@ -194,7 +194,7 @@ def goToWorkDir():
 def tarFiles(checkpointTar, containerID, checkpointName):
     checkpointDir = '/var/lib/docker/containers/%s/checkpoints' % containerID
     os.chdir(checkpointDir)
-    tar_file = tarfile.TarFile.open(name=checkpointTar, mode='w:bz2')
+    tar_file = tarfile.TarFile.open(name=checkpointTar, mode='w')
     checkpointTarFile = checkpointDir + '/' + checkpointName
     tar_file.add(checkpointTarFile, arcname=os.path.basename(checkpointTarFile))
     tar_file.close()
