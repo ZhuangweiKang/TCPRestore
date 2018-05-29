@@ -12,6 +12,7 @@ import Controller as controller
 import DockerHelper as dHelper
 import ZMQHelper as zmq
 
+
 def main(worker_address, choice):
     publisher_container_name = 'Publisher'
     publisher_image = 'zhuangweikang/publisher'
@@ -41,17 +42,21 @@ def main(worker_address, choice):
 
     logger.info('Send manager address and join token to worker node.')
 
-    time.sleep(5)
+    time.sleep(3)
 
     logger.info('Start doing main activity.')
 
     if choice == 1:
         # build publisher container
-        controller.executorSwarm()
+        controller.executorSwarm(logger, publisher_image, publisher_container_name, network, True, worker_address)
     else:
         # build publisher container
-        controller.executorSwarm()
+        controller.executorSwarm(logger, publisher_image, publisher_container_name, network, False, worker_address)
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--choice', type=int, default=1, help='1. Test Publisher, 2. Test Subscriber')
+    args = parser.parse_args()
+    choice = args.choice
+    main('129.59.107.139', choice)

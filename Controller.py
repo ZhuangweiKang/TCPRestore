@@ -49,9 +49,10 @@ def executor(image, containerName, doDump=False):
         time.sleep(20)
 
         # restore the container
-        dHelper.restore(dHelper.getContainerID(container), checkpoint_name)
+        checkpoint_dir = '/var/lib/docker/containers/%s/checkpoints/' % dHelper.getContainerID(container)
+        dHelper.restore(dHelper.getContainerID(container), checkpoint_dir, checkpoint_name)
 
-def executorSwarm(logger, image, containerName, doDump=False, dst_address=None):
+def executorSwarm(logger, image, containerName, network, doDump=False, dst_address=None):
     # create docker client
     client = dHelper.setClient()
 
@@ -70,7 +71,7 @@ def executorSwarm(logger, image, containerName, doDump=False, dst_address=None):
     logger.info('Image doesn\'t exist, building image.')
 
     # Run a container
-    container = dHelper.runContainer(client, image, containerName)
+    container = dHelper.runContainer(client, image, containerName, network=network)
 
     logger.info('Creat and run a container.')
 
@@ -87,7 +88,7 @@ def executorSwarm(logger, image, containerName, doDump=False, dst_address=None):
 
         # checkpoint the container
         checkpoint_name = 'checkpoint_' + str(random.randint(1, 100))
-        start = time.time()
+
         dHelper.checkpoint(checkpoint_name, dHelper.getContainerID(container))
 
         logger.info('\nContainer has been dumped.')
@@ -100,7 +101,7 @@ def executorSwarm(logger, image, containerName, doDump=False, dst_address=None):
         try:
             logger.info('Prepare to send tar file to destination host.')
             tarSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            tarSocket.connect((dst_address, '3300'))
+            tarSocket.connect((dst_address, 3300))
             logger.info('Connection has been set up.')
         except socket.error as msg:
             logger.error(msg)
@@ -116,8 +117,12 @@ def executorSwarm(logger, image, containerName, doDump=False, dst_address=None):
                 data = fp.read(1024)
                 if not data:
                     break
-                tarSocket.send(data)
-            # Note: 写到这里了
+                tarSocket.sendall(data)
+
+            logger.info('Tar file has been sent.')
+
+            fp.close()
+            tarSocket.close()
         else:
             logger.error('File %s not exists.' % fileName)
             sys.exit(1)
@@ -130,11 +135,54 @@ def executorSwarm(logger, image, containerName, doDump=False, dst_address=None):
             dHelper.pullImage(client, msg[1])
         iSocket.send_string('Ack')
 
-        # TODO: untar the received file
-        untarFile()
-        # TODO: restore container using untared file
+        # receive tar file
+        try:
+            recvSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            recvSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            recvSocket.bind(('', 3300))
+            recvSocket.listen(20)
+            logger.info('Waiting for client to connect...')
+            conn,addr = recvSocket.accept()
+            logger.info('Client %s has connected to server...' % addr)
+            goToWorkDir()
+            fileinfo_size = struct.calcsize('128sl')
+            fhead = conn.recv(fileinfo_size)
+            fileName, fileSize = struct.unpack('128sl', fhead)
+            logger.info('Received file info: %s' % fileName)
+            logger.info('File size: ' + fileSize)
 
-        pass
+            tarFile = open(fileName, 'wb')
+            logger.info('Start receiving file...')
+            tempSize = fileSize
+            while True:
+                if tempSize > 1024:
+                    data = conn.recv(1024)
+                else:
+                    data = conn.recv(tempSize)
+                if not data:
+                    break
+                tarFile.write(data)
+                tempSize -= len(data)
+                if tempSize == 0:
+                    break
+            logger.info('Receiving file finished, connection will be closed...')
+            tarFile.close()
+            conn.close()
+            recvSocket.close()
+            logger.info('Connection has been closed...')
+
+            # TODO: untar the received file
+            untarFile(fileName)
+            logger.info('Image file has been untared...')
+
+            # TODO: restore container using untared file
+            checkpoint_name = fileName.split('.')[0]
+            checkpoint_dir = '/var/lib/docker/tmp'
+            newContainer = 'newContainerFrom'+checkpoint_name
+            dHelper.restore(newContainer, checkpoint_dir, checkpoint_name)
+            logger.info('Container has been restored...')
+        except Exception as ex:
+            logger.error(ex)
 
 def getWorkDir():
     return 'var/lib/docker/tmp'

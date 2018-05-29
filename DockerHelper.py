@@ -14,8 +14,8 @@ def buildImage(client, path, tag):
 def pullImage(client, repository):
     client.images.pull(repository)
 
-def runContainer(client, image, name):
-    return client.containers.run(image=image, name=name, detach=True, ports={'3000/tcp':3000})
+def runContainer(client, image, name, network=None):
+    return client.containers.run(image=image, name=name, detach=True, ports={'3000/tcp':3000}, network=network)
 
 def getContainer(client, name):
     return client.containers.get(name)
@@ -44,8 +44,8 @@ def checkpoint(checkpoint_name, containerID):
     checkpoint_cmd = 'docker checkpoint create ' + containerID + ' ' + checkpoint_name
     print(os.popen(checkpoint_cmd, 'r').read())
 
-def restore(containerID, checkpoint_name):
-    checkpoint_dir = '/var/lib/docker/containers/%s/checkpoints/' % containerID
+def restore(containerID, checkpoint_dir, checkpoint_name):
+    # checkpoint_dir = '/var/lib/docker/containers/%s/checkpoints/' % containerID
     restore_cmd = 'docker start --checkpoint-dir=%s --checkpoint=%s %s' % (checkpoint_dir, checkpoint_name, containerID)
     print(os.popen(restore_cmd, 'r').read())
 
