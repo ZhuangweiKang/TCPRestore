@@ -27,7 +27,7 @@ def main(worker_address, choice):
 
     # build overlay network
     network = 'kangNetwork'
-    dHelper.createNetwork(client, name=network, subnet='10.10.26.136/24')
+    dHelper.createNetwork(client, name=network, driver='overlay', subnet='10.10.26.136/24')
     logger.info('Build overlay network: kangNetwork.')
 
     # send address and token to worker node, notify worker nodes to join the environment
