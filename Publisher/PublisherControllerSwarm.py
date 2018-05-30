@@ -8,9 +8,69 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import argparse
 import utl
 import  time
+import random
 import Controller as controller
 import DockerHelper as dHelper
-import ZMQHelper as zmq
+import ZMQHelper as zmqHelper
+
+
+class Publisher:
+    def __init__(self, name, image, network, subnet):
+        self.host_addr = utl.getHostIP()
+
+        self.name = name
+        self.image = image
+
+        self.network = network
+        self.subnet = subnet
+
+        self.logger = utl.doLog('PubControllLogger', 'PubController.log')
+        self.dockerClient = dHelper.setClient()
+        self.infoSocket = zmqHelper.bind('3100')
+
+    def initSwarmEnv(self):
+        dHelper.initSwarm(self.dockerClient, advertise_addr=self.host_addr)
+        self.logger.info('Init Swarm environment. This is manager node.')
+
+    def createOverlayNetwork(self):
+        dHelper.createNetwork(self.dockerClient, name=self.network, driver='overlay', subnet=self.subnet)
+        self.logger.info('Build overlay network: kangNetwork.')
+
+    def notifyWorkerJoin(self):
+        remote_addr = self.host_addr + ':2377'
+        join_token = dHelper.getJoinToken()
+        send_str = 'join-token %s %s' % (remote_addr, join_token)
+        zmqHelper.publish(self.infoSocket, send_str)
+        self.logger.info('Send manager address and join token to worker node.')
+
+    def deleteOldContainer(self):
+        if dHelper.checkContainer(self.dockerClient, self.name) is True:
+            container = dHelper.getContainer(self.dockerClient, self.name)
+            dHelper.deleteContainer(container)
+            self.logger.info('Old container exists, deleting old container.')
+
+    def pullImage(self):
+        if dHelper.checkImage(self.dockerClient, self.image) is False:
+            dHelper.pullImage(self.dockerClient, self.image)
+            self.logger.info('Image doesn\'t exist, building image.')
+
+    def runContainer(self):
+        container = dHelper.runContainer(self.dockerClient, self.image, self.name, network=self.network)
+        return container
+
+    def publishContainerIP(self):
+        containerIP = dHelper.getContainerIP(self.name)
+        msg = 'container-ip %s' % containerIP
+        zmqHelper.publish(self.infoSocket, msg)
+
+    def publishImageInfo(self):
+        msg = 'image %s' % self.image
+        zmqHelper.publish(self.infoSocket, msg)
+
+    def dumpContainer(self):
+        checkpoint_name = 'checkpoint_' + str(random.randint(1, 100))
+        tarName = checkpoint_name + '.tar'
+        dHelper.checkpoint(checkpoint_name, dHelper.getContainerID(self.name))
 
 
 def main(worker_address, choice):
@@ -30,12 +90,11 @@ def main(worker_address, choice):
     dHelper.createNetwork(client, name=network, driver='overlay', subnet='10.10.26.136/24')
     logger.info('Build overlay network: kangNetwork.')
 
-    # send address and token to worker node, notify worker nodes to join the environment
+    # send host address and token to worker node, notify worker nodes to join the environment
     advertise_addr = advertise_addr + ':2377'
     join_token = dHelper.getJoinToken()
 
     socket= zmq.csConnect(worker_address, '3100')
-
     send_str = advertise_addr + ' ' + join_token
     socket.send_string(send_str)
     socket.recv_string()

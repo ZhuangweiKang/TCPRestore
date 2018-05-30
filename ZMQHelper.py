@@ -6,13 +6,7 @@
 import zmq
 
 
-def connect(address, port):
-    context = zmq.Context()
-    socket = context.socket(zmq.SUB)
-    connect_str = 'tcp://%s:%s' % (address, port)
-    socket.connect(connect_str)
-    return socket
-
+# -------- C/S socket
 def csConnect(address, port):
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
@@ -20,18 +14,19 @@ def csConnect(address, port):
     socket.connect(connect_str)
     return socket
 
-def subscribeTopic(socket, topic):
-    topicfilter = topic
-    socket.setsockopt(zmq.SUBSCRIBE, topicfilter)
-
-
-def unsubscribeTopic(socket, topic):
-    socket.unsubscribe(topic)
-
 def csBind(port):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind('tcp://*:%s' % port)
+    return socket
+
+
+# -------- Pub/Sub Socket
+def connect(address, port):
+    context = zmq.Context()
+    socket = context.socket(zmq.SUB)
+    connect_str = 'tcp://%s:%s' % (address, port)
+    socket.connect(connect_str)
     return socket
 
 def bind(port):
@@ -39,3 +34,13 @@ def bind(port):
     socket = context.socket(zmq.PUB)
     socket.bind('tcp://*:%s' % port)
     return socket
+
+def subscribeTopic(socket, topic):
+    topicfilter = topic
+    socket.setsockopt(zmq.SUBSCRIBE, topicfilter)
+
+def unsubscribeTopic(socket, topic):
+    socket.unsubscribe(topic)
+
+def publish(socket, msg):
+    socket.send_string(msg)

@@ -14,8 +14,11 @@ def buildImage(client, path, tag):
 def pullImage(client, repository):
     client.images.pull(repository)
 
-def runContainer(client, image, name, network=None):
-    return client.containers.run(image=image, name=name, detach=True, ports={'3000/tcp':3000}, network=network)
+def runContainer(client, image, name, network=None, command=None):
+    if command is None:
+        return client.containers.run(image=image, name=name, detach=True, ports={'3000/tcp':3000}, network=network)
+    else:
+        return client.containers.run(image=image, name=name, detach=True, ports={'3000/tcp': 3000}, network=network, command=command)
 
 def getContainer(client, name):
     return client.containers.get(name)
@@ -78,5 +81,5 @@ def getContainerIP(container_name):
     cmd = 'docker inspect -f \'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}\' %s' % container_name
     return os.popen(cmd, 'r').read()
 
-def createContainer(client, image, name, network=None):
-    client.containers.create(image=image, name=name, detach=True, network=network)
+def createContainer(client, image, name, network=None, command=None):
+    client.containers.create(image=image, name=name, detach=True, ports={'3000/tcp': 3500}, network=network, command=command)

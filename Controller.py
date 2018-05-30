@@ -52,7 +52,7 @@ def executor(image, containerName, doDump=False):
         checkpoint_dir = '/var/lib/docker/containers/%s/checkpoints/' % dHelper.getContainerID(container)
         dHelper.restore(dHelper.getContainerID(container), checkpoint_dir, checkpoint_name)
 
-def executorSwarm(logger, image, containerName, network, doDump=False, dst_address=None):
+def executorSwarm(logger, image, containerName, network, doDump=False, dst_address=None, cSocket=None, sSocket=None):
     # create docker client
     client = dHelper.setClient()
 
@@ -69,10 +69,31 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
         dHelper.pullImage(client, image)
         logger.info('Image doesn\'t exist, building image.')
 
+    containerIP = None
+    if sSocket is not None:
+        global containerIP
+        # receive opposite container IP address
+        msg = sSocket.recv_string()
+        msg = msg.split()
+        containerIP = msg[1]
+        sSocket.send_string('Ack')
+
     # Run a container
     container = dHelper.runContainer(client, image, containerName, network=network)
 
     logger.info('Creat and run a container.')
+
+    if cSocket is not None:
+        # Send container ip to destination host
+        while True:
+            try:
+                ip = dHelper.getContainerIP(containerName)
+                break
+            except Exception as ex:
+                pass
+        msg = 'ContainerIP ' + ip
+        cSocket.send_string(msg)
+        cSocket.recv_string()
 
     if doDump:
         # TODO: notify dst node to download base image
@@ -91,7 +112,7 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
         dHelper.checkpoint(checkpoint_name, dHelper.getContainerID(container))
 
         logger.info('Container has been dumped.')
-
+//////////////////////////////////////////////////////////////////
         # TODO: tar dumped image files
         tarFiles(tarName, dHelper.getContainerID(container), checkpoint_name)
         logger.info('Tar dumped image files.')
