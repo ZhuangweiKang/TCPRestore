@@ -142,7 +142,7 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
             recvSocket.listen(20)
             logger.info('Waiting for client to connect...')
             conn,addr = recvSocket.accept()
-            logger.info('Client ' + addr + ' has connected to server...')
+            logger.info('Client has connected to server...')
             goToWorkDir()
             fileinfo_size = struct.calcsize('128sl')
             fhead = conn.recv(fileinfo_size)
