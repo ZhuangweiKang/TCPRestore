@@ -150,22 +150,21 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
             logger.info('Received file info: %s' % fileName)
             logger.info('File size: ' + str(fileSize))
 
-            tarFile = open(fileName, 'wb')
-            logger.info('Start receiving file...')
-            tempSize = fileSize
-            while True:
-                if tempSize > 1024:
-                    data = conn.recv(1024)
-                else:
-                    data = conn.recv(tempSize)
-                if not data:
-                    break
-                tarFile.write(data)
-                tempSize -= len(data)
-                if tempSize == 0:
-                    break
-            logger.info('Receiving file finished, connection will be closed...')
-            tarFile.close()
+            with open(fileName, 'wb') as tarFile:
+                logger.info('Start receiving file...')
+                tempSize = fileSize
+                while True:
+                    if tempSize > 1024:
+                        data = conn.recv(1024)
+                    else:
+                        data = conn.recv(tempSize)
+                    if not data:
+                        break
+                    tarFile.write(data)
+                    tempSize -= len(data)
+                    if tempSize == 0:
+                        break
+                logger.info('Receiving file finished, connection will be closed...')
             conn.close()
             recvSocket.close()
             logger.info('Connection has been closed...')
