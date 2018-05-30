@@ -108,8 +108,8 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
             sys.exit(1)
         fileName = checkpoint_name + '.tar'
         if os.path.isfile(fileName):
-            fileinfo_size = struct.calcsize('128sI')
-            fhead = struct.pack('128sI', os.path.basename(fileName), os.stat(fileName).st_size)
+            fileinfo_size = struct.calcsize('128sl')
+            fhead = struct.pack('128sl', os.path.basename(fileName), os.stat(fileName).st_size)
             tarSocket.send(fhead)
 
             fp = open(fileName, 'rb')
@@ -144,12 +144,12 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
             conn,addr = recvSocket.accept()
             logger.info('Client has connected to server...')
             goToWorkDir()
-            fileinfo_size = struct.calcsize('128sI')
+            fileinfo_size = struct.calcsize('128sl')
             fhead = conn.recv(fileinfo_size)
-            fileName, fileSize = struct.unpack('128sI', fhead)
+            fileName, fileSize = struct.unpack('128sl', fhead)
             logger.info('Received file info: %s' % fileName)
             logger.info('File size: ' + str(fileSize))
-
+            fileName = fileName.strip('\00')
             with open(fileName, 'wb') as tarFile:
                 logger.info('Start receiving file...')
                 tempSize = fileSize
