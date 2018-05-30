@@ -67,8 +67,7 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
     # check if image exists
     if dHelper.checkImage(client, image) is False:
         dHelper.pullImage(client, image)
-
-    logger.info('Image doesn\'t exist, building image.')
+        logger.info('Image doesn\'t exist, building image.')
 
     # Run a container
     container = dHelper.runContainer(client, image, containerName, network=network)
@@ -131,6 +130,7 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
         iSocket = zmq.csBind('3200')
         msg = iSocket.recv_string()
         msg = msg.split(':')
+        newImage = msg[1]
         if msg[0] == 'image':
             dHelper.pullImage(client, msg[1])
         iSocket.send_string('Ack')
@@ -177,6 +177,10 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
             checkpoint_name = fileName.split('.')[0]
             checkpoint_dir = '/var/lib/docker/tmp'
             newContainer = 'newContainerFrom'+checkpoint_name
+
+            # create the new container using base image
+            dHelper.createContainer(client, newImage, newContainer, network)
+
             dHelper.restore(newContainer, checkpoint_dir, checkpoint_name)
             logger.info('Container has been restored...')
         except Exception as ex:

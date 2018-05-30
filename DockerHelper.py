@@ -77,3 +77,6 @@ def createNetwork(client, name, driver='overlay', attachable=True, subnet=None):
 def getContainerIP(container_name):
     cmd = 'docker inspect -f \'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}\' %s' % container_name
     return os.popen(cmd, 'r').read()
+
+def createContainer(client, image, name, network=None):
+    client.containers.create(image=image, name=name, detach=True, ports={'3000/tcp': 3000}, network=network)
