@@ -149,7 +149,7 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
             fileName, fileSize = struct.unpack('128sl', fhead)
             logger.info('Received file info: %s' % fileName)
             logger.info('File size: ' + str(fileSize))
-
+            print(fileName)
             with open(fileName, 'wb') as tarFile:
                 logger.info('Start receiving file...')
                 tempSize = fileSize
