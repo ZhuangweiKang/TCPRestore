@@ -79,4 +79,4 @@ def getContainerIP(container_name):
     return os.popen(cmd, 'r').read()
 
 def createContainer(client, image, name, network=None):
-    client.containers.create(image=image, name=name, detach=True, ports={'3000/tcp': 3000}, network=network)
+    client.containers.create(image=image, name=name, detach=True, network=network)
