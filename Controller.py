@@ -202,7 +202,8 @@ def tarFiles(checkpointTar, containerID, checkpointName):
 def untarFile(tarFile):
     goToWorkDir()
     tar = tarfile.TarFile.open(name=tarFile, mode='r')
-    tar.extract('./')
+    fn = tarFile.split('.')[0]
+    tar.extract(fn)
     tar.close()
     os.remove(tarFile)
 
