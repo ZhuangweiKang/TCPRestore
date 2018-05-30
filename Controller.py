@@ -138,7 +138,6 @@ def executorSwarm(logger, image, containerName, network, doDump=False, dst_addre
         # receive tar file
         try:
             recvSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            recvSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             recvSocket.bind(('', 3300))
             recvSocket.listen(20)
             logger.info('Waiting for client to connect...')
