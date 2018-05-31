@@ -1,4 +1,3 @@
-import os
 import logging
 
 
@@ -20,8 +19,3 @@ def doLog(loggerName, logFile):
     logger.addHandler(cl)
 
     return logger
-
-def getHostIP():
-    host_addr = os.popen('ip addr show dev ens3 | grep inet | awk \'{print $2}\' | head -n 1', 'r').read()
-    host_addr = host_addr.split('/')[0]
-    return host_addr

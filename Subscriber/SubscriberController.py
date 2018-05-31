@@ -6,7 +6,7 @@ import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import argparse
-import Controller as controller
+import LiveMigration as controller
 
 def main(choice):
     subscriber_container_name = 'Subscriber'
